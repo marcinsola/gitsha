@@ -6,13 +6,19 @@ if ($argc <= 1) {
 }
 
 $ch = curl_init();
+$endpoint = sprintf('https://api.github.com/repos/%s/commits', $argv[1]);
+
+if (isset($argv[2])) {
+    $endpoint .= sprintf('?sha=%s', $argv[2]);
+}
+
 curl_setopt_array(
     $ch,
     [
         CURLOPT_HTTPHEADER => [
             'User-Agent: marcinsola',
         ],
-        CURLOPT_URL => sprintf('https://api.github.com/repos/%s/commits', $argv[1]),
+        CURLOPT_URL => $endpoint,
         CURLOPT_RETURNTRANSFER => true,
     ]
 );
@@ -25,4 +31,4 @@ if (is_array($result)) {
     die;
 }
 
-echo sprintf("Couldn't find repo %s. Please make sure that the data provided is valid.", $argv[1]);
+echo sprintf("Couldn't find repo %s. Please make sure that the repo and branch names provided are valid.", $argv[1]);
