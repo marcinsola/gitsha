@@ -1,5 +1,4 @@
 <?php
-
 class Gitsha {
     private array $arguments;
     private array $services;
@@ -27,11 +26,14 @@ class Gitsha {
             return sprintf('Unknown service: %s', $service);
         }
 
-        //@TODO: zaimplementować ogólną metodę prepareEndpoint
-        $endpoint = $this->prepareGithubEndpoint();
+        $endpointMethod = sprintf('prepare%sEndpoint', $service);
+        $apiMethod = sprintf('parse%sApiResponse', $service);
+        $parseMethod = sprintf('parse%sApiResponse', $service);
 
-        return $this->parseApiResponse(
-            $this->getApiResponse($endpoint, $service),
+        $endpoint = $this->$endpointMethod();
+
+        return $this->$parseMethod(
+            $this->$apiMethod($endpoint, $service),
             $service
         );
     }
@@ -49,7 +51,7 @@ class Gitsha {
        return $endpoint;
     }
 
-    private function getApiResponse(string $endpoint, string $service): string
+    private function getGithubApiResponse(string $endpoint, string $service): string
     {
         $ch = curl_init();
         curl_setopt_array(
@@ -67,7 +69,7 @@ class Gitsha {
         return $result;
     }
 
-    private function parseApiResponse(string $response, string $service): string
+    private function parseGithubApiResponse(string $response, string $service): string
     {
         $result = json_decode($response);
 
